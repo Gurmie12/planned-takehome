@@ -1,0 +1,51 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model MemoryLane {
+  id        String   @id @default(uuid())
+  title     String
+  description String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  isPublic  Boolean  @default(true)
+  memories Memory[]
+
+  @@map("memory_lanes")
+}
+
+model Memory {
+  id        String   @id @default(uuid())
+  memoryLaneId String
+  memoryLane MemoryLane @relation(fields: [memoryLaneId], references: [id], onDelete: Cascade)
+  title     String
+  description String?
+  timestamp DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  images MemoryImage[]
+
+
+  @@index([memoryLaneId, timestamp])
+  @@map("memories")
+}
+
+model MemoryImage {
+  id        String   @id @default(uuid())
+  memoryId String
+  memory Memory @relation(fields: [memoryId], references: [id], onDelete: Cascade)
+  blobUrl String
+  blobPath String
+  order Int @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([memoryId, order])
+  @@map("memory_images")
+}
