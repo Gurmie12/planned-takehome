@@ -1,6 +1,9 @@
-import type { Memory, MemoryImage } from "@/app/generated/prisma/client";
+"use client";
+
+import dayjs from "dayjs";
 import { MemoryDeleteButton } from "@/modules/memory/components/MemoryDeleteButton";
 import { MemoryEditButton } from "@/modules/memory/components/MemoryEditButton";
+import type { Memory, MemoryImage } from "@/app/generated/prisma/client";
 
 type MemoryWithImages = Memory & {
   images: MemoryImage[];
@@ -12,12 +15,9 @@ type MemoryProps = {
 };
 
 export function MemoryItem({ memory, isAdmin }: MemoryProps) {
-  const date = new Date(memory.timestamp);
-  const day = date.toLocaleDateString(undefined, {
-    day: "2-digit",
-    month: "short",
-  });
-  const year = date.getFullYear();
+  const d = dayjs(memory.timestamp);
+  const day = d.format("DD MMM");
+  const year = d.format("YYYY");
 
   return (
     <article className="flex gap-4 rounded-2xl border bg-card/80 p-5 shadow-sm">
@@ -36,11 +36,7 @@ export function MemoryItem({ memory, isAdmin }: MemoryProps) {
           <div className="space-y-1">
             <h2 className="text-base font-semibold">{memory.title}</h2>
             <span className="text-xs text-muted-foreground">
-              {date.toLocaleString(undefined, {
-                weekday: "short",
-                hour: "2-digit",
-                minute: "2-digit",
-              })}
+              {d.format("ddd HH:mm")}
             </span>
           </div>
           {isAdmin && (
